@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team Lamm Draw Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: draw-by-draw lookup table first (what family needs at the rink), then the full win/loss tree. */
+:root{
+  --bg:#eef3f6; --surface:#ffffff; --ink:#12263a; --muted:#5a6f80; --line:#cfdbe3;
+  --stone:#b3261e; --ice:#2c6e9b; --win:#1f7a4d; --loss:#7a5a1f; --out:#6b7280; --tint:#e3edf3;
+  --display:'Barlow Condensed','Arial Narrow',sans-serif;
+  --body:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1a26; --surface:#15283a; --ink:#e6eef4; --muted:#93a8b8; --line:#27425a;
+  --stone:#ff7b72; --ice:#6cb4e4; --win:#5fcf95; --loss:#e0b562; --out:#9aa5b1; --tint:#1b3249; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1a26; --surface:#15283a; --ink:#e6eef4; --muted:#93a8b8; --line:#27425a;
+  --stone:#ff7b72; --ice:#6cb4e4; --win:#5fcf95; --loss:#e0b562; --out:#9aa5b1; --tint:#1b3249; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:28px 56px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:36px}
+header{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(40px,9vw,64px);line-height:1;margin:0;text-wrap:balance}
+h1 span{color:var(--stone)}
+.sub{color:var(--muted);max-width:60ch;margin:0}
+h2{font-family:var(--display);font-weight:600;font-size:28px;margin:0 0 4px;letter-spacing:.01em}
+p.note{margin:0 0 12px;color:var(--muted);max-width:65ch;font-size:14px}
+.locked{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.lock{background:var(--surface);border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.lock b{font-family:var(--display);font-size:24px;font-weight:600}
+.lock small{color:var(--muted)}
+.tablebox{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--tint);font-weight:500}
+tr:last-child td{border-bottom:0}
+td.draw{font-family:var(--display);font-size:20px;font-weight:600;white-space:nowrap}
+td.draw small{display:block;font-family:var(--body);font-size:12px;font-weight:400;color:var(--muted)}
+.opt{display:flex;gap:8px;align-items:baseline;margin-bottom:4px}
+.opt:last-child{margin-bottom:0}
+.sh{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--ink);color:var(--bg);padding:1px 7px;white-space:nowrap}
+.opt span.t{font-size:14px}
+.opt em{font-style:normal;color:var(--muted);font-size:13px}
+.path{font-family:var(--mono);font-size:11px;color:var(--ice);white-space:nowrap}
+/* tree */
+.tree,.tree ul{list-style:none;margin:0;padding:0}
+.tree ul{margin-left:14px;padding-left:16px;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.tree li{display:flex;flex-direction:column;gap:0}
+.branch{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:12px;font-weight:600;margin-bottom:6px}
+.branch.w{color:var(--win)} .branch.l{color:var(--loss)}
+.game{background:var(--surface);border:1px solid var(--line);padding:10px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.game .top{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.game .when{font-family:var(--display);font-size:22px;font-weight:600}
+.game .stage{color:var(--muted);font-size:13px}
+.game .opp{font-size:13px;color:var(--muted)}
+.end{display:inline-block;font-size:13px;font-weight:600;padding:4px 10px;border:1px solid currentColor}
+.end.out{color:var(--out)} .end.fin{color:var(--stone)}
+.end.champ{color:var(--win)}
+details{background:transparent}
+summary{cursor:pointer;font-family:var(--display);font-size:22px;font-weight:600;padding:6px 0}
+summary:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+a.btn{display:inline-block;background:var(--stone);color:var(--bg);font-weight:600;padding:10px 16px;text-decoration:none}
+a.btn:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+footer{font-size:13px;color:var(--muted);max-width:65ch}
+html{color-scheme:light dark}
+body{margin:0}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">2026 BOO Bonspiel · Oct 8–11 · Team Lamm (Triangle)</div>
+  <h1>Where to watch <span>Lamm</span></h1>
+  <p class="sub">Lamm opens Friday, Oct 9 at 10:15am. After that, the game time and sheet depend on wins and losses. Every possible game is listed below.</p>
+</header>
+
+<section>
+  <h2>Watch online</h2>
+  <p class="note">Broomstones streams its bonspiels on YouTube, one stream per sheet. The channel's Streams tab lists each sheet when the event starts. Use the sheet number from the draw below to pick the right one.</p>
+  <p style="margin:0"><a class="btn" href="https://www.youtube.com/@broomstonescc/streams" target="_blank" rel="noopener">Broomstones on YouTube: Streams</a></p>
+<p style="margin:12px 0 0"><a href="Team_Lamm_BOO_2026_Draw.pdf" style="color:var(--ice);font-weight:600">Download the printable PDF</a></p>
+</section>
+
+<section>
+  <h2>Three games Lamm plays no matter what</h2>
+  <p class="note">Win or lose, these are on the schedule. Only the sheet changes.</p>
+  <div class="locked">
+    <div class="lock"><b>Fri 10:15am</b><span>Sheet 3</span><small>vs Nutty Stones (Nutmeg, Carelli)</small></div>
+    <div class="lock"><b>Fri 9:15pm</b><span>Sheet 1 if Lamm wins, Sheet 2 if Lamm loses</span></div>
+    <div class="lock"><b>Sat 3:45pm</b><span>Sheet 1, 2, 3 or 4</span><small>Depends on the first two results</small></div>
+  </div>
+</section>
+
+<section>
+  <h2>Draw by draw</h2>
+  <p class="note">Find the time, then pick the line that matches how Lamm has done so far. W is a win, L is a loss, in order of games played.</p>
+  <div class="tablebox"><table>
+    <thead><tr><th>Draw</th><th>Possible games</th></tr></thead>
+    <tbody>
+    <tr><td class="draw">Fri 10:15am<small>Opening round</small></td><td>
+      <div class="opt"><span class="sh">Sheet 3</span><span class="t">vs Nutty Stones</span></div></td></tr>
+    <tr><td class="draw">Fri 9:15pm<small>Round 2</small></td><td>
+      <div class="opt"><span class="sh">Sheet 1</span><span class="t">Won game 1</span><span class="path">W</span></div>
+      <div class="opt"><span class="sh">Sheet 2</span><span class="t">Lost game 1</span><span class="path">L</span></div></td></tr>
+    <tr><td class="draw">Sat 3:45pm<small>Round 3</small></td><td>
+      <div class="opt"><span class="sh">Sheet 2</span><span class="t">A bracket quarterfinal</span><span class="path">WW</span></div>
+      <div class="opt"><span class="sh">Sheet 4</span><span class="t">C bracket round of 14</span><span class="path">WL</span></div>
+      <div class="opt"><span class="sh">Sheet 1</span><span class="t">B bracket round of 12</span><span class="path">LW</span></div>
+      <div class="opt"><span class="sh">Sheet 3</span><span class="t">C bracket round of 14</span><span class="path">LL</span></div></td></tr>
+    <tr><td class="draw">Sat 9:15pm<small>Round 4</small></td><td>
+      <div class="opt"><span class="sh">Sheet 4</span><span class="t">A bracket semifinal</span><span class="path">WWW</span></div>
+      <div class="opt"><span class="sh">Sheet 1</span><span class="t">B bracket quarterfinal</span><span class="path">WWL</span></div>
+      <div class="opt"><span class="sh">Sheet 3</span><span class="t">B bracket quarterfinal</span><span class="path">LWW</span></div>
+      <div class="opt"><span class="sh">Sheet 2</span><span class="t">Consolation game, last game of the weekend</span><span class="path">LLL</span></div>
+      <div class="opt"><em>No game after WLL or LWL (eliminated Saturday afternoon)</em></div></td></tr>
+    <tr><td class="draw">Sun 8:00am<small>Round 5</small></td><td>
+      <div class="opt"><span class="sh">Sheet 3</span><span class="t">C bracket quarterfinal</span><span class="path">WLW</span></div>
+      <div class="opt"><span class="sh">Sheet 4</span><span class="t">C bracket quarterfinal</span><span class="path">LLW</span></div></td></tr>
+    <tr><td class="draw">Sun 10:15am<small>Semifinals</small></td><td>
+      <div class="opt"><span class="sh">Sheet 2</span><span class="t">B bracket semifinal</span><span class="path">WWLW or LWWW</span></div>
+      <div class="opt"><span class="sh">Sheet 4</span><span class="t">C bracket semifinal</span><span class="path">WLWW</span></div>
+      <div class="opt"><span class="sh">Sheet 3</span><span class="t">C bracket semifinal</span><span class="path">LLWW</span></div></td></tr>
+    <tr><td class="draw">Sun 1:00pm<small>Finals</small></td><td>
+      <div class="opt"><span class="sh">Sheet 2</span><span class="t">A Final</span><span class="path">WWWW</span></div>
+      <div class="opt"><span class="sh">Sheet 3</span><span class="t">D Final</span><span class="path">WWWL</span></div>
+      <div class="opt"><span class="sh">Sheet 4</span><span class="t">B Final</span><span class="path">WWLWW or LWWWW</span></div>
+      <div class="opt"><span class="sh">Sheet 1</span><span class="t">C Final</span><span class="path">WLWWW or LLWWW</span></div></td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <h2>Every path, as a tree</h2>
+  <p class="note">Start at the top. Follow the branch that matches each result. Lamm is out of the bonspiel any time a branch says Eliminated.</p>
+  <ul class="tree" id="tree"></ul>
+</section>
+
+<footer>Built from the 2026 Broomstones Oktoberfest Open (BOO) draw spreadsheet. The event page lists Oct 8–11, 2026; it does not list a stream link yet. Times and sheets can change if the organizers move games, so check the posted draw at the rink. Opponents beyond the first two games are not known until earlier games finish.</footer>
+</div>
+
+<script>
+const OUT={end:'Eliminated',cls:'out'};
+const fin=(b,sh)=>({when:'Sun 1:00pm',sheet:sh,stage:b+' Final',w:{end:b+' bracket champions',cls:'champ'},l:{end:'Runner-up in '+b+' bracket',cls:'fin'}});
+const T={
+ when:'Fri 10:15am',sheet:3,stage:'Opening round (A15)',opp:'vs Nutty Stones (Nutmeg, Carelli)',
+ w:{when:'Fri 9:15pm',sheet:1,stage:'A bracket round of 8 (A24)',opp:'vs winner of Line’s Good, Stein’s Better and Wydysh',
+   w:{when:'Sat 3:45pm',sheet:2,stage:'A bracket quarterfinal (A28)',
+     w:{when:'Sat 9:15pm',sheet:4,stage:'A bracket semifinal (A30)',
+        w:fin('A',2),
+        l:fin('D',3)},
+     l:{when:'Sat 9:15pm',sheet:1,stage:'B bracket quarterfinal (B15)',
+        w:{when:'Sun 10:15am',sheet:2,stage:'B bracket semifinal (B18)',w:fin('B',4),l:OUT},
+        l:OUT}},
+   l:{when:'Sat 3:45pm',sheet:4,stage:'C bracket round of 14 (C8)',
+     w:{when:'Sun 8:00am',sheet:3,stage:'C bracket quarterfinal (C12)',
+        w:{when:'Sun 10:15am',sheet:4,stage:'C bracket semifinal (C14)',w:fin('C',1),l:OUT},
+        l:OUT},
+     l:OUT}},
+ l:{when:'Fri 9:15pm',sheet:2,stage:'B bracket round of 20 (B8)',opp:'vs loser of Line’s Good, Stein’s Better and Wydysh',
+   w:{when:'Sat 3:45pm',sheet:1,stage:'B bracket round of 12 (B12)',
+     w:{when:'Sat 9:15pm',sheet:3,stage:'B bracket quarterfinal (B16)',
+        w:{when:'Sun 10:15am',sheet:2,stage:'B bracket semifinal (B18)',w:fin('B',4),l:OUT},
+        l:OUT},
+     l:OUT},
+   l:{when:'Sat 3:45pm',sheet:3,stage:'C bracket round of 14 (C4)',
+     w:{when:'Sun 8:00am',sheet:4,stage:'C bracket quarterfinal (C10)',
+        w:{when:'Sun 10:15am',sheet:3,stage:'C bracket semifinal (C13)',w:fin('C',1),l:OUT},
+        l:OUT},
+     l:{when:'Sat 9:15pm',sheet:2,stage:'Consolation game (Con2)',w:{end:'Done for the weekend',cls:'out'},l:{end:'Done for the weekend',cls:'out'}}}}
+};
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function end(n){return '<span class="end '+n.cls+'">'+esc(n.end)+'</span>';}
+function node(n,branch){
+  const li=document.createElement('li');
+  let h='';
+  if(branch)h+='<div class="branch '+(branch==='W'?'w':'l')+'">'+(branch==='W'?'IF WIN':'IF LOSS')+'</div>';
+  if(n.end){h+=end(n);li.innerHTML=h;return li;}
+  h+='<div class="game"><div class="top"><span class="when">'+esc(n.when)+'</span><span class="sh">Sheet '+n.sheet+'</span><span class="stage">'+esc(n.stage)+'</span></div>'+(n.opp?'<div class="opp">'+esc(n.opp)+'</div>':'')+'</div>';
+  li.innerHTML=h;
+  const ul=document.createElement('ul');
+  ul.appendChild(node(n.w,'W'));ul.appendChild(node(n.l,'L'));
+  li.appendChild(ul);
+  return li;
+}
+document.getElementById('tree').appendChild(node(T));
+</script>
+
+</body>
+</html>

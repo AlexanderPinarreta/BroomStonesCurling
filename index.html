@@ -65,6 +65,11 @@ td.draw small{display:block;font-family:var(--body);font-size:12px;font-weight:4
 details{background:transparent}
 summary{cursor:pointer;font-family:var(--display);font-size:22px;font-weight:600;padding:6px 0}
 summary:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
+.status{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--stone);padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.status .score{font-family:var(--display);font-size:24px;font-weight:600}
+.status .next{font-size:14px}
+.dim{opacity:.4}
+.badge{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--stone)}
 a.btn{display:inline-block;background:var(--stone);color:var(--bg);font-weight:600;padding:10px 16px;text-decoration:none}
 a.btn:focus-visible{outline:2px solid var(--ice);outline-offset:2px}
 footer{font-size:13px;color:var(--muted);max-width:65ch}
@@ -81,6 +86,15 @@ body{margin:0}
   <h1>Where to watch <span>Lamm</span></h1>
   <p class="sub">Lamm opens Friday, Oct 9 at 10:15am. After that, the game time and sheet depend on wins and losses. Every possible game is listed below.</p>
 </header>
+
+<section id="status">
+  <div class="status">
+    <div class="eyebrow">Update · Fri Oct 9</div>
+    <div class="score"><b>Game 1 final:</b> Nutty Stones 8, Lamm (Triangle) 7</div>
+    <div class="next"><b>Next game:</b> Fri 9:15pm, Sheet 2 (B bracket, round of 20) vs the loser of Line\u2019s Good, Stein\u2019s Better and Wydysh</div>
+    <div class="next">From there: win goes to Sat 3:45pm, Sheet 1. Loss goes to Sat 3:45pm, Sheet 3.</div>
+  </div>
+</section>
 
 <section>
   <h2>Watch online</h2>
@@ -149,7 +163,7 @@ body{margin:0}
 const OUT={end:'Eliminated',cls:'out'};
 const fin=(b,sh)=>({when:'Sun 1:00pm',sheet:sh,stage:b+' Final',w:{end:b+' bracket champions',cls:'champ'},l:{end:'Runner-up in '+b+' bracket',cls:'fin'}});
 const T={
- when:'Fri 10:15am',sheet:3,stage:'Opening round (A15)',opp:'vs Nutty Stones (Nutmeg, Carelli)',
+ when:'Fri 10:15am',sheet:3,stage:'Opening round (A15)',opp:'vs Nutty Stones (Nutmeg, Carelli)',res:'Final: Lost 7–8',
  w:{when:'Fri 9:15pm',sheet:1,stage:'A bracket round of 8 (A24)',opp:'vs winner of Line’s Good, Stein’s Better and Wydysh',
    w:{when:'Sat 3:45pm',sheet:2,stage:'A bracket quarterfinal (A28)',
      w:{when:'Sat 9:15pm',sheet:4,stage:'A bracket semifinal (A30)',
@@ -177,15 +191,16 @@ const T={
 };
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 function end(n){return '<span class="end '+n.cls+'">'+esc(n.end)+'</span>';}
-function node(n,branch){
+function node(n,branch,dim){
   const li=document.createElement('li');
+  if(dim)li.className='dim';
   let h='';
   if(branch)h+='<div class="branch '+(branch==='W'?'w':'l')+'">'+(branch==='W'?'IF WIN':'IF LOSS')+'</div>';
   if(n.end){h+=end(n);li.innerHTML=h;return li;}
-  h+='<div class="game"><div class="top"><span class="when">'+esc(n.when)+'</span><span class="sh">Sheet '+n.sheet+'</span><span class="stage">'+esc(n.stage)+'</span></div>'+(n.opp?'<div class="opp">'+esc(n.opp)+'</div>':'')+'</div>';
+  h+='<div class="game"><div class="top"><span class="when">'+esc(n.when)+'</span><span class="sh">Sheet '+n.sheet+'</span><span class="stage">'+esc(n.stage)+'</span></div>'+(n.opp?'<div class="opp">'+esc(n.opp)+'</div>':'')+(n.res?'<div class="badge">'+esc(n.res)+'</div>':'')+'</div>';
   li.innerHTML=h;
   const ul=document.createElement('ul');
-  ul.appendChild(node(n.w,'W'));ul.appendChild(node(n.l,'L'));
+  ul.appendChild(node(n.w,'W',n.res&&n.res.includes('Lost')));ul.appendChild(node(n.l,'L',n.res&&n.res.includes('Won')));
   li.appendChild(ul);
   return li;
 }

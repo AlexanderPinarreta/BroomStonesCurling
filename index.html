@@ -92,7 +92,8 @@ body{margin:0}
     <div class="eyebrow">Update · Fri Oct 9</div>
     <div class="score"><b>Game 1 final:</b> Nutty Stones 8, Lamm (Triangle) 7</div>
     <div class="next"><b>Next game:</b> Fri 9:15pm, Sheet 2 (B bracket, round of 20) vs Line’s Good, Stein’s Better (Colonial, Basta)</div>
-    <div class="next">From there: win goes to Sat 3:45pm, Sheet 1. Loss goes to Sat 3:45pm, Sheet 3.</div>
+    <div class="next"><b>Sat 3:45pm if we win:</b> Sheet 1 vs the winner of Slane and Schenectady Gandhi (they play Fri 9:15pm, Sheet 3)</div>
+    <div class="next"><b>Sat 3:45pm if we lose:</b> Sheet 3 vs the loser of that same Slane / Gandhi game</div>
   </div>
 </section>
 
@@ -107,9 +108,9 @@ body{margin:0}
   <h2>Three games Lamm plays no matter what</h2>
   <p class="note">Win or lose, these are on the schedule. Only the sheet changes.</p>
   <div class="locked">
-    <div class="lock"><b>Fri 10:15am</b><span>Sheet 3</span><small>vs Nutty Stones (Nutmeg, Carelli)</small></div>
-    <div class="lock"><b>Fri 9:15pm</b><span>Sheet 1 if Lamm wins, Sheet 2 if Lamm loses</span></div>
-    <div class="lock"><b>Sat 3:45pm</b><span>Sheet 1, 2, 3 or 4</span><small>Depends on the first two results</small></div>
+    <div class="lock"><b>Fri 10:15am</b><span>Sheet 3</span><small>Lost 7–8 to Nutty Stones</small></div>
+    <div class="lock"><b>Fri 9:15pm</b><span>Sheet 2</span><small>vs Line’s Good, Stein’s Better</small></div>
+    <div class="lock"><b>Sat 3:45pm</b><span>Sheet 1, 2, 3 or 4</span><small>Sheet 1 with a win, Sheet 3 with a loss, vs Slane or Gandhi</small></div>
   </div>
 </section>
 
@@ -178,12 +179,12 @@ const T={
         l:OUT},
      l:OUT}},
  l:{when:'Fri 9:15pm',sheet:2,stage:'B bracket round of 20 (B8)',opp:'vs Line’s Good, Stein’s Better (Basta)',
-   w:{when:'Sat 3:45pm',sheet:1,stage:'B bracket round of 12 (B12)',
+   w:{when:'Sat 3:45pm',sheet:1,stage:'B bracket round of 12 (B12)',opp:'vs winner of Slane / Gandhi',
      w:{when:'Sat 9:15pm',sheet:3,stage:'B bracket quarterfinal (B16)',
         w:{when:'Sun 10:15am',sheet:2,stage:'B bracket semifinal (B18)',w:fin('B',4),l:OUT},
         l:OUT},
      l:OUT},
-   l:{when:'Sat 3:45pm',sheet:3,stage:'C bracket round of 14 (C4)',
+   l:{when:'Sat 3:45pm',sheet:3,stage:'C bracket round of 14 (C4)',opp:'vs loser of Slane / Gandhi',
      w:{when:'Sun 8:00am',sheet:4,stage:'C bracket quarterfinal (C10)',
         w:{when:'Sun 10:15am',sheet:3,stage:'C bracket semifinal (C13)',w:fin('C',1),l:OUT},
         l:OUT},
